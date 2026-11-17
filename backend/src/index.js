@@ -1,0 +1,24 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const pool = require('./db');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get('/salud', async (req, res) => {
+  try {
+    const [filas] = await pool.query(
+      'SELECT COUNT(*) AS tablas FROM information_schema.tables WHERE table_schema = ?',
+      [process.env.DB_NAME]
+    );
+    res.json({ servidor: 'ok', baseDeDatos: 'ok', tablas: filas[0].tablas });
+  } catch (error) {
+    res.status(500).json({ servidor: 'ok', baseDeDatos: 'error', detalle: error.message });
+  }
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`API en http://localhost:${process.env.PORT}`);
+});
