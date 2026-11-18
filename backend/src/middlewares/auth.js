@@ -23,4 +23,16 @@ function soloRoles(...roles) {
   };
 }
 
-module.exports = { autenticar, soloRoles };
+function autenticarOpcional(req, res, next) {
+  const [tipo, token] = (req.headers.authorization || '').split(' ');
+  if (tipo === 'Bearer' && token) {
+    try {
+      req.usuario = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      // token inválido: se trata como visitante
+    }
+  }
+  next();
+}
+
+module.exports = { autenticar, autenticarOpcional, soloRoles };

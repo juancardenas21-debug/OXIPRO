@@ -21,6 +21,8 @@ app.get('/salud', async (req, res) => {
 
 app.use('/clientes', require('./routes/clientesRoutes'));
 app.use('/auth', require('./routes/authRoutes'));
+app.use('/productos', require('./routes/productosRoutes'));
+app.use('/pedidos', require('./routes/pedidosRoutes'));
 
 app.listen(process.env.PORT, () => {
   console.log(`API en http://localhost:${process.env.PORT}`);
