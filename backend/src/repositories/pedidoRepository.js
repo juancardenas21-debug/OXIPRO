@@ -82,4 +82,83 @@ async function listar({ idCliente, fechaInicio, fechaFin }) {
   return filas;
 }
 
-module.exports = { crear, obtener, lineasDe, pagoDe, listar };
+async function cancelar(id, { esAdmin, idUsuario }) {
+  const conexion = await pool.getConnection();
+  try {
+    await conexion.beginTransaction();
+    const [filas] = await conexion.query(
+      'SELECT id_cliente, estado FROM pedido WHERE id_pedido = ? FOR UPDATE', [id]
+    );
+    const pedido = filas[0];
+    if (!pedido) throw new Error('NO_EXISTE');
+    if (!esAdmin && pedido.id_cliente !== idUsuario) throw new Error('SIN_PERMISO');
+    const permitidos = esAdmin ? ['PENDIENTE', 'PAGADO', 'EN_PREPARACION'] : ['PENDIENTE'];
+    if (!permitidos.includes(pedido.estado)) {
+      const error = new Error('ESTADO_NO_PERMITE');
+      error.estado = pedido.estado;
+      throw error;
+    }
+    const [lineas] = await conexion.query(
+      'SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ? ORDER BY id_producto', [id]
+    );
+    for (const l of lineas) {
+      await conexion.query('UPDATE producto SET stock = stock + ? WHERE id_producto = ?', [l.cantidad, l.id_producto]);
+    }
+    await conexion.query("UPDATE pedido SET estado = 'CANCELADO' WHERE id_pedido = ?", [id]);
+    await conexion.commit();
+    return { estadoAnterior: pedido.estado };
+  } catch (error) {
+    await conexion.rollback();
+    throw error;
+  } finally {
+    conexion.release();
+  }
+}
+
+async function cambiarEstado(id, nuevo, anterior) {
+  const [r] = await pool.query(
+    'UPDATE pedido SET estado = ? WHERE id_pedido = ? AND estado = ?', [nuevo, id, anterior]
+  );
+  return r.affectedRows === 1;
+}
+
+async function registrarPagoManual(id, d) {
+  const conexion = await pool.getConnection();
+  try {
+    await conexion.beginTransaction();
+    const [filas] = await conexion.query(
+      'SELECT estado, total = CAST(? AS DECIMAL(12,2)) AS coincide FROM pedido WHERE id_pedido = ? FOR UPDATE',
+      [d.monto, id]
+    );
+    const pedido = filas[0];
+    if (!pedido) throw new Error('NO_EXISTE');
+    if (pedido.estado !== 'PENDIENTE') throw new Error('ESTADO_NO_PERMITE');
+    if (!pedido.coincide) throw new Error('MONTO_DISTINTO');
+    await conexion.query(
+      "UPDATE pago SET metodo = ?, estado = 'APROBADO', fecha_pago = NOW(), referencia = ?, registrado_por = ? WHERE id_pedido = ?",
+      [d.metodo, d.referencia, d.idAdmin, id]
+    );
+    await conexion.query("UPDATE pedido SET estado = 'PAGADO' WHERE id_pedido = ?", [id]);
+    await conexion.query(
+      `INSERT INTO factura (id_pedido, fecha_emision, impuestos, total_a_pagar)
+       SELECT id_pedido, NOW(), ROUND(total - total / 1.19, 2), total FROM pedido WHERE id_pedido = ?`,
+      [id]
+    );
+    await conexion.commit();
+  } catch (error) {
+    await conexion.rollback();
+    throw error;
+  } finally {
+    conexion.release();
+  }
+}
+
+async function facturaDe(id) {
+  const [filas] = await pool.query(
+    'SELECT id_factura AS idFactura, fecha_emision AS fechaEmision, impuestos, total_a_pagar AS totalAPagar FROM factura WHERE id_pedido = ?',
+    [id]
+  );
+  return filas[0] || null;
+}
+
+module.exports = { crear, obtener, lineasDe, pagoDe, listar, cancelar, cambiarEstado, registrarPagoManual, facturaDe };
