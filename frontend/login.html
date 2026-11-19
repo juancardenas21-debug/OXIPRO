@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar | OxiPro</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="encabezado">
+    <a class="logo" href="index.html"><span></span> OXIPRO</a>
+  </header>
+
+  <main class="contenedor angosto">
+    <h1>Portal de clientes</h1>
+    <div class="pestanas">
+      <button type="button" id="tab-ingresar" class="activa">Ingresar</button>
+      <button type="button" id="tab-registro">Registrarme</button>
+    </div>
+    <p class="mensaje" id="mensaje" role="alert" hidden></p>
+
+    <form class="panel" id="form-ingresar">
+      <label for="in-correo" style="margin-top:0">Correo electrónico</label>
+      <input id="in-correo" name="correo" type="email" required autocomplete="username">
+      <label for="in-password">Contraseña</label>
+      <input id="in-password" name="password" type="password" required autocomplete="current-password">
+      <button class="btn" type="submit" style="width:100%; margin-top:18px">Ingresar a mi cuenta</button>
+    </form>
+
+    <form class="panel" id="form-registro" hidden>
+      <div class="fila">
+        <div><label for="r-nombre" style="margin-top:0">Nombre</label><input id="r-nombre" name="nombre" required></div>
+        <div><label for="r-apellido" style="margin-top:0">Apellido</label><input id="r-apellido" name="apellido" required></div>
+      </div>
+      <div class="fila">
+        <div style="flex:0 0 110px"><label for="r-tipo">Tipo</label>
+          <select id="r-tipo" name="tipoDoc"><option>CC</option><option>NIT</option><option>CE</option></select></div>
+        <div><label for="r-documento">Número de documento</label><input id="r-documento" name="documento" required></div>
+      </div>
+      <label for="r-telefono">Teléfono</label>
+      <input id="r-telefono" name="telefono" type="tel" required>
+      <label for="r-correo">Correo electrónico</label>
+      <input id="r-correo" name="correo" type="email" required autocomplete="username">
+      <label for="r-direccion">Dirección</label>
+      <input id="r-direccion" name="direccion" required>
+      <label for="r-password">Contraseña (mínimo 8 caracteres)</label>
+      <input id="r-password" name="password" type="password" minlength="8" required autocomplete="new-password">
+      <button class="btn" type="submit" style="width:100%; margin-top:18px">Crear mi cuenta</button>
+    </form>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

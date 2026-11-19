@@ -153,7 +153,17 @@ async function crearCertificado(idInforme, idTecnico) {
   }
 }
 
+async function listarTecnicos() {
+  const [filas] = await pool.query(
+    `SELECT u.id_usuario AS idTecnico, u.nombre, u.apellido, t.especialidad
+     FROM usuario u JOIN tecnico t ON t.id_tecnico = u.id_usuario
+     WHERE u.estado = 'ACTIVO' ORDER BY u.nombre`
+  );
+  return filas;
+}
+
 module.exports = {
   crearEquipo, listarEquipos, obtenerEquipo, crear, obtener, listar, informeDe,
   tecnicoActivo, agendar, cambiarEstado, cancelar, crearInforme, crearCertificado,
+  listarTecnicos
 };

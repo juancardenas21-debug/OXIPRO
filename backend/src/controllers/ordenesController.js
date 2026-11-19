@@ -191,4 +191,14 @@ async function crearCertificado(req, res) {
   }
 }
 
-module.exports = { crearEquipo, listarEquipos, crear, listar, detalle, actualizar, cancelar, crearInforme, crearCertificado };
+async function listarTecnicos(req, res) {
+  try {
+    res.json(await ordenes.listarTecnicos());
+  } catch (error) {
+    responder(res, error);
+  }
+}
+
+module.exports = { crearEquipo, listarEquipos, crear, listar, detalle, actualizar, cancelar, crearInforme, crearCertificado,
+                    listarTecnicos
+};

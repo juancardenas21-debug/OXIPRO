@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Productos | OxiPro</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="encabezado">
+    <a class="logo" href="index.html"><span></span> OXIPRO</a>
+    <div class="zona">
+      <div class="zona" id="zona-sesion"></div>
+      <button class="btn claro" type="button" id="boton-carrito">Carrito (0)</button>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <h1>Catálogo de productos</h1>
+    <p class="sub">Equipos, repuestos y accesorios para oxicorte</p>
+    <p class="mensaje info" id="nota-rol" hidden>Estás conectado como administrador o técnico: solo los clientes pueden comprar.</p>
+
+    <div class="catalogo">
+      <form class="panel" id="filtros">
+        <label for="texto" style="margin-top:0">Buscar</label>
+        <input id="texto" name="texto" type="search" placeholder="Nombre o descripción">
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria"><option value="">Todas</option></select>
+        <div class="fila">
+          <div><label for="precioMin">Precio mín.</label><input id="precioMin" name="precioMin" type="number" min="0"></div>
+          <div><label for="precioMax">Precio máx.</label><input id="precioMax" name="precioMax" type="number" min="0"></div>
+        </div>
+        <label><input type="checkbox" name="soloDisponibles" style="width:auto"> Solo con existencias</label>
+        <button class="btn" type="submit" style="width:100%; margin-top:14px">Aplicar filtros</button>
+      </form>
+
+      <section>
+        <p class="mensaje info" id="aviso" role="status" hidden></p>
+        <div class="rejilla" id="rejilla"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="cortina" id="cortina" hidden></div>
+  <aside class="cajon" id="cajon" aria-label="Carrito de compras" hidden>
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <h2 style="margin:0">Tu carrito</h2>
+      <button class="btn enlace" type="button" id="cerrar-carrito">Cerrar</button>
+    </div>
+    <div id="lineas"></div>
+    <div class="total"><span>Total</span><strong id="total">$ 0</strong></div>
+    <button class="btn" type="button" id="finalizar">Finalizar compra</button>
+  </aside>
+
+  <script src="js/api.js"></script>
+  <script src="js/carrito.js"></script>
+  <script src="js/catalogo.js"></script>
+</body>
+</html>
