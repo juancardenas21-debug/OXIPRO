@@ -1,5 +1,4 @@
--- OxiPro Soluciones Industriales: modelo de datos (MySQL 8)
--- Generado a partir del modelo entidad-relación del documento.
+-- OxiPro Soluciones Industriales: modelo de datos (MySQL 8 / MariaDB)
 CREATE DATABASE IF NOT EXISTS oxipro CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE oxipro;
 
@@ -79,8 +78,8 @@ CREATE TABLE pago (
   monto DECIMAL(12,2) NOT NULL,
   metodo ENUM('PASARELA', 'TRANSFERENCIA', 'EFECTIVO') NOT NULL,
   estado ENUM('PENDIENTE', 'APROBADO', 'RECHAZADO') NOT NULL,
-  fecha_pago DATETIME NOT NULL,
-  referencia VARCHAR(60) NOT NULL,
+  fecha_pago DATETIME NULL,
+  referencia VARCHAR(60) NULL,
   PRIMARY KEY (id_pago),
   UNIQUE KEY uq_pago_id_pedido (id_pedido),
   CONSTRAINT fk_pago_id_pedido FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido) ON DELETE RESTRICT,
@@ -90,17 +89,16 @@ CREATE TABLE pago (
 CREATE TABLE factura (
   id_factura BIGINT AUTO_INCREMENT,
   id_pedido BIGINT NOT NULL,
-  fecha_emision DATE NOT NULL,
-  subtotal DECIMAL(12,2) NOT NULL,
+  fecha_emision DATETIME NOT NULL,
   impuestos DECIMAL(12,2) NOT NULL,
-  total DECIMAL(12,2) NOT NULL,
+  total_a_pagar DECIMAL(12,2) NOT NULL,
   PRIMARY KEY (id_factura),
   UNIQUE KEY uq_factura_id_pedido (id_pedido),
   CONSTRAINT fk_factura_id_pedido FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 CREATE TABLE equipo_cliente (
-  id_equipo BIGINT AUTO_INCREMENT,
+  id_equipo INT AUTO_INCREMENT,
   id_cliente BIGINT NOT NULL,
   tipo_equipo VARCHAR(50) NOT NULL,
   marca VARCHAR(50) NOT NULL,
@@ -113,7 +111,7 @@ CREATE TABLE equipo_cliente (
 CREATE TABLE orden_servicio (
   id_orden BIGINT AUTO_INCREMENT,
   id_cliente BIGINT NOT NULL,
-  id_equipo BIGINT NOT NULL,
+  id_equipo INT NOT NULL,
   id_tecnico BIGINT NULL,
   fecha_solicitud DATE NOT NULL,
   fecha_agendada DATE NULL,
@@ -127,9 +125,9 @@ CREATE TABLE orden_servicio (
 ) ENGINE=InnoDB;
 
 CREATE TABLE informe_tecnico (
-  id_informe BIGINT AUTO_INCREMENT,
+  id_informe INT AUTO_INCREMENT,
   id_orden BIGINT NOT NULL,
-  descripcion TEXT NOT NULL,
+  diagnostico TEXT NOT NULL,
   repuestos_cambiados TEXT NOT NULL,
   resultado_hermeticidad ENUM('APROBADO', 'NO_APROBADO') NOT NULL,
   fecha_informe DATE NOT NULL,
@@ -140,11 +138,9 @@ CREATE TABLE informe_tecnico (
 
 CREATE TABLE certificado (
   id_certificado BIGINT AUTO_INCREMENT,
-  id_informe BIGINT NOT NULL,
+  id_informe INT NOT NULL,
   codigo VARCHAR(30) NOT NULL,
-  fecha_emision DATE NOT NULL,
+  fecha_emision DATETIME NOT NULL,
   PRIMARY KEY (id_certificado),
   UNIQUE KEY uq_certificado_id_informe (id_informe),
   UNIQUE KEY uq_certificado_codigo (codigo),
-  CONSTRAINT fk_certificado_id_informe FOREIGN KEY (id_informe) REFERENCES informe_tecnico(id_informe) ON DELETE RESTRICT
-) ENGINE=InnoDB;
