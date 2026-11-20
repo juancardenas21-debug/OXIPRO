@@ -41,7 +41,32 @@ input, select { width: 100%; padding: 10px; border: 1px solid #bdb7ab; border-ra
 .cantidad { display: flex; align-items: center; gap: 8px; }
 .cantidad button { width: 30px; height: 30px; padding: 0; }
 .total { display: flex; justify-content: space-between; font-size: 1.1rem; margin: 8px 0; }
+
 @media (max-width: 800px) {
   .catalogo { grid-template-columns: 1fr; }
   .encabezado, .contenedor { padding-left: 16px; padding-right: 16px; }
+.enlace-menu { color: var(--negro); text-decoration: none; font-weight: 600; padding: 6px 2px; border-bottom: 2px solid transparent; }
+.enlace-menu:hover, .enlace-menu.activo { border-bottom-color: var(--naranja); }
+h2 { margin: 0 0 8px; }
+.espacio { margin-top: 20px; }
+.acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.btn.peligro { background: #9B1C1C; }
+textarea { width: 100%; padding: 10px; border: 1px solid #bdb7ab; border-radius: 3px; font: inherit; min-height: 80px; }
+.tabla-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: .75rem; text-transform: uppercase; color: var(--gris); padding: 8px 10px; border-bottom: 2px solid var(--borde); }
+td { padding: 10px; border-bottom: 1px solid #EEE9E0; vertical-align: top; }
+.chip { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: .75rem; font-weight: 700; background: #eee; }
+.chip.aviso { background: #FFE9C7; color: #8A5A00; }
+.chip.info { background: #DDEBFF; color: #1F4E9C; }
+.chip.proceso { background: #EADDFF; color: #5B2FA3; }
+.chip.ok { background: #D9F2DD; color: #1E6B2E; }
+.chip.mal { background: #F8D9D9; color: #9B1C1C; }
+.seguimiento { display: flex; gap: 8px; margin: 14px 0; }
+.paso { flex: 1; text-align: center; font-size: .8rem; color: var(--gris); }
+.paso .barra { height: 8px; background: var(--borde); border-radius: 4px; margin-bottom: 6px; }
+.paso.hecho { color: var(--negro); font-weight: 700; }
+.paso.hecho .barra { background: var(--naranja); }
+@media (max-width: 800px) { .dos { grid-template-columns: 1fr; } }
 }
