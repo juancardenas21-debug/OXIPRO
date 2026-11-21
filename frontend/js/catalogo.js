@@ -59,7 +59,7 @@ async function cargar(filtros = {}) {
   const q = new URLSearchParams();
   for (const [clave, valor] of Object.entries(filtros)) if (valor) q.set(clave, valor);
   try {
-    const productos = await api('/productos' + (q.toString() ? '?' + q : ''));
+    const productos = await api('/productos' + (q.toString() ? '?' + q : ''), { auth: false });
     rejilla.replaceChildren(...productos.map(tarjeta));
     aviso.hidden = productos.length > 0;
     aviso.textContent = 'No se encontraron productos con esos criterios.';
@@ -88,8 +88,13 @@ document.getElementById('finalizar').addEventListener('click', () => {
 });
 
 (async () => {
-  const productos = await cargar();
-  const categorias = [...new Set(productos.map((p) => p.categoria))].sort();
+  const todos = await cargar();
+  const categorias = [...new Set(todos.map((p) => p.categoria))].sort();
   for (const c of categorias) selCategoria.append(el('option', { value: c }, c));
+  const texto = new URLSearchParams(location.search).get('texto') || '';
+  if (texto) {
+    document.getElementById('texto').value = texto;
+    await cargar({ texto });
+  }
   pintarCarrito();
 })();

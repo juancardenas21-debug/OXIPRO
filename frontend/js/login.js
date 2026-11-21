@@ -1,8 +1,9 @@
 const params = new URLSearchParams(location.search);
-const DESTINOS = ['index.html', 'checkout.html']; // solo se permite volver a estas páginas
-const destino = () => (DESTINOS.includes(params.get('volver')) ? params.get('volver') : 'index.html');
-
-if (sesion()) location.replace(destino());
+const DESTINOS = ['productos.html', 'checkout.html'];
+const volver = () => (DESTINOS.includes(params.get('volver')) ? params.get('volver') : 'productos.html');
+const inicioPorRol = (rol) => (rol === 'ADMIN' ? 'admin-pedidos.html' : rol === 'TECNICO' ? 'tecnico.html' : volver());
+const actual = sesion();
+if (actual) location.replace(inicioPorRol(actual.rol));
 
 const formIngresar = document.getElementById('form-ingresar');
 const formRegistro = document.getElementById('form-registro');
@@ -23,7 +24,7 @@ function aviso(texto) { mensaje.textContent = texto; mensaje.hidden = false; }
 async function iniciar(correo, password) {
   const r = await api('/auth/login', { metodo: 'POST', cuerpo: { correo, password }, auth: false });
   guardarSesion({ token: r.token, rol: r.rol, nombre: r.nombre });
-  location.href = destino();
+  location.href = inicioPorRol(r.rol);
 }
 
 tabIngresar.addEventListener('click', () => mostrar('ingresar'));

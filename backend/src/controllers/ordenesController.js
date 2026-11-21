@@ -199,6 +199,8 @@ async function listarTecnicos(req, res) {
   }
 }
 
+
+
 module.exports = { crearEquipo, listarEquipos, crear, listar, detalle, actualizar, cancelar, crearInforme, crearCertificado,
                     listarTecnicos
 };
