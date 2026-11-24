@@ -1,6 +1,8 @@
 const pedidos = require('../repositories/pedidoRepository');
 
 const METODOS = ['PASARELA', 'TRANSFERENCIA', 'EFECTIVO'];
+const SIGUIENTE = { EN_PREPARACION: 'PAGADO', ENVIADO: 'EN_PREPARACION', ENTREGADO: 'ENVIADO' };
+const esId = (v) => /^\d+$/.test(String(v)) && Number(v) > 0; //[citar: 1]
 
 function agrupar(lineas) {
   const porProducto = new Map();
@@ -66,22 +68,27 @@ async function listar(req, res) {
 
 async function detalle(req, res) {
   try {
+    if (!esId(req.params.id)) return res.status(400).json({ error: 'Id no válido' }); //[cite: 1]
     const id = Number(req.params.id);
     const pedido = await pedidos.obtener(id);
     if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado' });
     if (req.usuario.rol === 'CLIENTE' && pedido.idCliente !== req.usuario.id) {
       return res.status(403).json({ error: 'No tienes permiso para ver este pedido' });
     }
-    res.json({ ...pedido, lineas: await pedidos.lineasDe(id), pago: await pedidos.pagoDe(id), factura: await pedidos.facturaDe(id) });
+    res.json({
+      ...pedido,
+      lineas: await pedidos.lineasDe(id),
+      pago: await pedidos.pagoDe(id),
+      factura: await pedidos.facturaDe(id),
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
 
-const SIGUIENTE = { EN_PREPARACION: 'PAGADO', ENVIADO: 'EN_PREPARACION', ENTREGADO: 'ENVIADO' };
-
 async function cancelar(req, res) {
   try {
+    if (!esId(req.params.id)) return res.status(400).json({ error: 'Id no válido' }); //[cite: 1]
     const motivo = req.body.motivo;
     if (!motivo || typeof motivo !== 'string' || !motivo.trim()) {
       return res.status(400).json({ error: 'El motivo de la cancelación es obligatorio' });
@@ -106,6 +113,7 @@ async function cancelar(req, res) {
 
 async function cambiarEstado(req, res) {
   try {
+    if (!esId(req.params.id)) return res.status(400).json({ error: 'Id no válido' }); //[cite: 1]
     const id = Number(req.params.id);
     const { nuevoEstado } = req.body;
     if (!Object.keys(SIGUIENTE).includes(nuevoEstado)) {
@@ -125,6 +133,7 @@ async function cambiarEstado(req, res) {
 
 async function registrarPago(req, res) {
   try {
+    if (!esId(req.params.id)) return res.status(400).json({ error: 'Id no válido' }); //[cite: 1]
     const id = Number(req.params.id);
     const { metodo, monto, referencia } = req.body;
     if (!['TRANSFERENCIA', 'EFECTIVO'].includes(metodo)) {
@@ -148,6 +157,7 @@ async function registrarPago(req, res) {
 
 async function factura(req, res) {
   try {
+    if (!esId(req.params.id)) return res.status(400).json({ error: 'Id no válido' }); //[cite: 1]
     const id = Number(req.params.id);
     const pedido = await pedidos.obtener(id);
     if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado' });

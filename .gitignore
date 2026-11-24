@@ -4,3 +4,5 @@ node_modules/
 # Ignorar variables de entorno y credenciales
 .env
 config.json
+
+coverage/
